@@ -1,11 +1,13 @@
 const KEY_PROMPT = "PROMPT";
 const KEY_NEGATIVE = "NEGATIVE";
+
 import type { Tags } from "./stores";
 import localforage from "localforage";
+
 import { PROMPT, NEGATIVE } from "./tags";
 
 export function savePrompt(obj?: Tags) {
-    if (!obj) localforage.setItem(KEY_PROMPT, {});
+    if (!obj) localforage.removeItem(KEY_PROMPT);
     return localforage.setItem(KEY_PROMPT, obj);
 }
 
@@ -14,8 +16,9 @@ function mergeTags(older: Tags, newer: Tags): Tags {
     const newerTags = Object.keys(newer);
     for (const tagName of newerTags) {
         if (olderTags.includes(tagName)) continue;
-        olderTags[tagName] = newerTags[tagName];
+        older[tagName] = newer[tagName];
     }
+    console.log(older);
     return older;
 }
 
@@ -26,7 +29,7 @@ export async function loadPrompt(): Promise<Tags> {
 }
 
 export function saveNegative(obj?: Tags) {
-    if (!obj) localforage.setItem(KEY_NEGATIVE, {});
+    if (!obj) localforage.removeItem(KEY_NEGATIVE);
     return localforage.setItem(KEY_NEGATIVE, obj);
 }
 
@@ -39,7 +42,7 @@ export async function loadNegative(): Promise<Tags> {
 function strengthenWord(str: string, count: number, l = "{", r = "}"): string {
     if (count <= 0) return "";
     if (count === 1) return str;
-    return l.repeat(count) + str + r.repeat(count);
+    return l.repeat(count - 1) + str + r.repeat(count - 1);
 }
 
 export function generateOutput(tags: Tags, l?: string, r?: string): string {
@@ -53,6 +56,7 @@ export function generateOutput(tags: Tags, l?: string, r?: string): string {
  * clean all PROMPT & NEGATIVE tags
  */
 export async function clearAll() {
+    await localforage.clear();
     await savePrompt();
     await saveNegative();
 }

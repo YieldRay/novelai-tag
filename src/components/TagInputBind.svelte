@@ -2,7 +2,7 @@
     import TagArea from "./TagArea.svelte";
     import InputArea from "./InputArea.svelte";
     import { Card, Loading } from "attractions";
-    import type { TagsStore } from "./stores";
+    import type { TagsStore } from "../lib/stores";
 
     export let tagsStorePromise: Promise<TagsStore>;
     export let l: string;

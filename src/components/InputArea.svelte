@@ -1,9 +1,9 @@
 <script type="ts">
-    import type { TagsStore } from "./stores";
+    import type { TagsStore } from "../lib/stores";
     import { TextField, Button, Dot } from "attractions";
-    import { generateOutput } from "./config";
+    import { generateOutput } from "../lib/config";
 
-    import getToast from "./toast";
+    import getToast from "../lib/toast";
     const toast = getToast();
 
     export let label = "default-label";

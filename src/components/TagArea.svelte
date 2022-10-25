@@ -1,7 +1,7 @@
 <script type="ts">
     export let tagsStore: TagsStore; //!!! This is a store!!!
 
-    import { TagsStore, TagDesc, tagsToTagsDesc, tagsToCats } from "./stores";
+    import { TagsStore, TagDesc, tagsToTagsDesc, tagsToCats } from "../lib/stores";
     import { Tabs } from "attractions";
     import Tag from "./Tag.svelte";
 

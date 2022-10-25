@@ -1,5 +1,5 @@
 <script>
-    import TagInputBind from "./lib/TagInputBind.svelte";
+    import TagInputBind from "./components/TagInputBind.svelte";
     import { promptTagsPromise, negativeTagsPromise } from "./lib/stores";
     import { savePrompt, saveNegative } from "./lib/config";
     import { Switch, Button } from "attractions";
@@ -21,21 +21,25 @@
     $: r = na_or_sd ? ")" : "}";
 </script>
 
-<Switch bind:value={na_or_sd}>
-    <span class="ml">
-        {#if na_or_sd}
-            NovelAI(NAIFU)
-        {:else}
-            Stable-Diffusion-WebUI
-        {/if}
-    </span>
-</Switch>
-<Button
-    on:click={async () => {
-        await clearAll();
-        toast("清除完成");
-    }}>清除数据</Button
->
+<div style="display: flex; justify-content: space-between">
+    <Switch bind:value={na_or_sd}>
+        <span class="ml">
+            {#if na_or_sd}
+                NovelAI(NAIFU)
+            {:else}
+                Stable-Diffusion-WebUI
+            {/if}
+        </span>
+    </Switch>
+    <Button
+        on:click={async () => {
+            (await promptTagsPromise).clear();
+            (await negativeTagsPromise).clear();
+            await clearAll();
+            toast("清除完成");
+        }}>清除数据</Button
+    >
+</div>
 
 <TagInputBind info label="prompt" tagsStorePromise={promptTagsPromise} {l} {r} />
 <br />

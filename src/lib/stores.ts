@@ -54,7 +54,7 @@ async function createTagsStore(tagsSource: Tags) {
                 return tags;
             });
         },
-        clear() {
+        reset() {
             update((tags) => {
                 for (const tagName in tags) {
                     tags[tagName].count = 0;
@@ -62,6 +62,9 @@ async function createTagsStore(tagsSource: Tags) {
                 save(tags);
                 return tags;
             });
+        },
+        clear() {
+            set({});
         },
     };
 }
