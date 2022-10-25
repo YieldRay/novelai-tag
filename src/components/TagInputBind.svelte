@@ -3,25 +3,23 @@
     import InputArea from "./InputArea.svelte";
     import { Card, Loading } from "attractions";
     import type { TagsStore } from "../lib/stores";
+    import { fade } from "svelte/transition";
 
     export let tagsStorePromise: Promise<TagsStore>;
-    export let l: string;
-    export let r: string;
     export let label: string;
     export let info: boolean = false;
     export let attention: boolean = false;
 </script>
 
-<Card outline>
+<Card outline style="overflow: hidden">
     {#await tagsStorePromise}
         <Loading />
     {:then tagsStore}
-        <InputArea {info} {attention} {label} {tagsStore} {l} {r} />
-        <TagArea {tagsStore} />
+        <div transition:fade>
+            <InputArea {info} {attention} {label} {tagsStore} />
+            <TagArea {tagsStore} />
+        </div>
     {:catch error}
         <p style="color: red">{error.message}</p>
     {/await}
 </Card>
-
-<style>
-</style>

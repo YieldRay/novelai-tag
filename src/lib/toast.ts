@@ -1,4 +1,4 @@
-import { Position } from "svelte-notifications";
+import type { Position } from "svelte-notifications";
 import { getNotificationsContext } from "svelte-notifications";
 
 export default function toastBuilder() {

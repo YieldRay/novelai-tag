@@ -4,7 +4,9 @@ const KEY_NEGATIVE = "NEGATIVE";
 import type { Tags } from "./stores";
 import localforage from "localforage";
 
-import { PROMPT, NEGATIVE } from "./tags";
+// import Data from "../assets/tagsData";
+import _Data from "../assets/tags";
+const Data: Tags = _Data as Tags;
 
 export function savePrompt(obj?: Tags) {
     if (!obj) localforage.removeItem(KEY_PROMPT);
@@ -24,8 +26,8 @@ function mergeTags(older: Tags, newer: Tags): Tags {
 
 export async function loadPrompt(): Promise<Tags> {
     const propmt = await localforage.getItem<Tags>(KEY_PROMPT);
-    if (!propmt) return PROMPT;
-    return mergeTags(propmt, PROMPT);
+    if (!propmt) return Data;
+    return mergeTags(propmt, Data);
 }
 
 export function saveNegative(obj?: Tags) {
@@ -35,8 +37,8 @@ export function saveNegative(obj?: Tags) {
 
 export async function loadNegative(): Promise<Tags> {
     const negative = await localforage.getItem<Tags>(KEY_NEGATIVE);
-    if (!negative) return NEGATIVE;
-    return mergeTags(negative, NEGATIVE);
+    if (!negative) return Data;
+    return mergeTags(negative, Data);
 }
 
 function strengthenWord(str: string, count: number, l = "{", r = "}"): string {

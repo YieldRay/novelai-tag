@@ -1,27 +1,34 @@
 <script type="ts">
-    export let tagsStore: TagsStore; //!!! This is a store!!!
+    export let tagsStore: TagsStore;
 
-    import { TagsStore, TagDesc, tagsToTagsDesc, tagsToCats } from "../lib/stores";
+    import { TagsStore, createCatsStore, createTagsDescStore } from "../lib/stores";
     import { Tabs } from "attractions";
     import Tag from "./Tag.svelte";
 
-    let catNames: Array<string> = []; // this is for tabs
-    let currentTagName = catNames[0];
+    const catNames = createCatsStore(tagsStore);
+    const tags = createTagsDescStore(tagsStore);
 
-    let tags: Array<TagDesc> = [];
-    $: {
-        tagsStore.subscribe((t) => {
-            const isInit = catNames.length === 0;
-            catNames = tagsToCats(t);
-            if (isInit) currentTagName = catNames[0];
-            tags = tagsToTagsDesc(t);
-        });
-    }
+    let currentTagName = $catNames[0];
 </script>
 
-<Tabs name="menu" items={catNames} bind:value={currentTagName} />
-{#each tags as { cat, tag, count } (tag)}
-    {#if currentTagName === cat}
-        <Tag {count} {tag} on:minus={() => tagsStore.minus(tag)} on:plus={() => tagsStore.plus(tag)} />
-    {/if}
-{/each}
+<div style="overflow-x: auto;">
+    <Tabs name="menu" items={$catNames} bind:value={currentTagName} />
+</div>
+<div class="box">
+    {#each $tags as { cat, tag, cn, count } (tag)}
+        {#if currentTagName === cat}
+            <Tag {count} tag={cn || tag} on:minus={() => tagsStore.minus(tag)} on:plus={() => tagsStore.plus(tag)} />
+        {/if}
+    {/each}
+</div>
+
+<style>
+    .box {
+        padding: 0.2em;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.2em;
+    }
+</style>

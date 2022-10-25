@@ -1,37 +1,26 @@
-import { writable } from "svelte/store";
-import { savePrompt, loadPrompt, loadNegative } from "./config";
+import { writable, derived } from "svelte/store";
+import { savePrompt, saveNegative, loadPrompt, loadNegative, generateOutput } from "./config";
 
 export interface Tag {
     cat: string;
     count: number;
     // number = 0 means tag is not selected
     // negative numbers is prevented
+    cn?: string;
 }
 
 export interface Tags {
     [tagName: string]: Tag;
 }
 
-export interface TagDesc extends Tag {
-    tag: string;
-}
-
-export function tagsToTagsDesc(tags: Tags): Array<TagDesc> {
-    return Object.entries(tags).map(([tag, tagObj]) => ({ tag, ...tagObj }));
-}
-
-export function tagsToCats(tags: Tags): Array<string> {
-    return [...new Set(Object.values(tags).map((t) => t.cat))];
-}
-
-async function createTagsStore(tagsSource: Tags) {
+async function createTagsStore(tagsSource: Tags, saveTags: typeof savePrompt) {
     const { subscribe, set, update } = writable<Tags>(tagsSource);
     let actionCount = 0;
     const saveCount = 5;
     const save = (obj: Tags) => {
         actionCount++;
         if (actionCount >= 5) {
-            savePrompt(obj);
+            saveTags(obj);
             actionCount = 0;
         }
     };
@@ -69,6 +58,28 @@ async function createTagsStore(tagsSource: Tags) {
     };
 }
 
-export const promptTagsPromise = (async () => createTagsStore(await loadPrompt()))();
+//! brackets
+export const bracketsStore = writable<[string, string]>(["{", "}"]);
+
 export type TagsStore = Awaited<ReturnType<typeof createTagsStore>>;
-export const negativeTagsPromise = (async () => createTagsStore(await loadNegative()))();
+
+//! generate tags string via prompt/negative and depends on brackets
+export function createTagsString(tagsStore: TagsStore) {
+    return derived([tagsStore, bracketsStore], ([$tagsStore, $bracketsStore]) =>
+        generateOutput($tagsStore, ...$bracketsStore)
+    );
+}
+
+export function createCatsStore(tagsStore: TagsStore) {
+    return derived(tagsStore, ($tagsStore) => [...new Set(Object.values($tagsStore).map((t) => t.cat))]);
+}
+
+export interface TagDesc extends Tag {
+    tag: string;
+}
+export function createTagsDescStore(tagsStore: TagsStore) {
+    return derived(tagsStore, ($tagsStore) => Object.entries($tagsStore).map(([tag, tagObj]) => ({ tag, ...tagObj })));
+}
+
+export const promptTagsPromise = (async () => createTagsStore(await loadPrompt(), savePrompt))();
+export const negativeTagsPromise = (async () => createTagsStore(await loadNegative(), saveNegative))();

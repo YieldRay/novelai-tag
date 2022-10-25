@@ -1,6 +1,6 @@
 <script>
     import TagInputBind from "./components/TagInputBind.svelte";
-    import { promptTagsPromise, negativeTagsPromise } from "./lib/stores";
+    import { promptTagsPromise, negativeTagsPromise, bracketsStore } from "./lib/stores";
     import { savePrompt, saveNegative } from "./lib/config";
     import { Switch, Button } from "attractions";
     import { clearAll } from "./lib/config";
@@ -15,10 +15,10 @@
     };
 
     let na_or_sd = true;
-    let l;
-    $: l = na_or_sd ? "(" : "{";
-    let r;
-    $: r = na_or_sd ? ")" : "}";
+    $: {
+        if (na_or_sd) bracketsStore.set(["(", ")"]);
+        else bracketsStore.set(["{", "}"]);
+    }
 </script>
 
 <div style="display: flex; justify-content: space-between">
@@ -41,9 +41,9 @@
     >
 </div>
 
-<TagInputBind info label="prompt" tagsStorePromise={promptTagsPromise} {l} {r} />
+<TagInputBind info label="prompt" tagsStorePromise={promptTagsPromise} />
 <br />
-<TagInputBind attention label="negative" tagsStorePromise={negativeTagsPromise} {l} {r} />
+<TagInputBind attention label="negative" tagsStorePromise={negativeTagsPromise} />
 
 <style>
 </style>
