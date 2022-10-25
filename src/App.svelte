@@ -4,7 +4,7 @@
 </script>
 
 <Notifications>
-    <main style="overflow-x:hidden">
+    <main>
         <Root />
     </main>
 </Notifications>

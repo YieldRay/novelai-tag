@@ -2,7 +2,8 @@
     export let tagsStore: TagsStore;
 
     import { TagsStore, createCatsStore, createTagsDescStore } from "../lib/stores";
-    import { Tabs } from "attractions";
+    // import { Tabs } from "attractions";
+    import Tabs from "./Tabs.svelte";
     import Tag from "./Tag.svelte";
 
     const catNames = createCatsStore(tagsStore);
@@ -12,7 +13,8 @@
 </script>
 
 <div style="overflow-x: auto;">
-    <Tabs name="menu" items={$catNames} bind:value={currentTagName} />
+    <!-- <Tabs name="menu" items={$catNames} bind:value={currentTagName} /> -->
+    <Tabs bind:value={currentTagName} items={$catNames} />
 </div>
 <div class="box">
     {#each $tags as { cat, tag, cn, count } (tag)}

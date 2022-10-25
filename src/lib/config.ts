@@ -20,7 +20,6 @@ function mergeTags(older: Tags, newer: Tags): Tags {
         if (olderTags.includes(tagName)) continue;
         older[tagName] = newer[tagName];
     }
-    console.log(older);
     return older;
 }
 
