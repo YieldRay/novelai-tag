@@ -1,8 +1,15 @@
 <script type="ts">
-    import { TextField, Label } from "attractions";
-    import { generateOutput } from "./config";
-    export let label = "default-label";
     import type { TagsStore } from "./stores";
+    import { TextField, Button, Dot } from "attractions";
+    import { generateOutput } from "./config";
+
+    import getToast from "./toast";
+    const toast = getToast();
+
+    export let label = "default-label";
+
+    export let info: boolean = false;
+    export let attention: boolean = false;
 
     export let tagsStore: TagsStore;
     export let l = "{";
@@ -15,7 +22,23 @@
 </script>
 
 <div>
-    <Label>{label}</Label>
+    <Button
+        on:click={async () => {
+            if (!("clipboard" in navigator)) {
+                toast("浏览器不支持 Clipboard API");
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(value);
+                toast("复制成功");
+            } catch {
+                toast("请授予剪切板权限");
+            }
+        }}
+    >
+        <Dot {info} {attention} class="ml" />&nbsp;
+        {label.toUpperCase()}
+    </Button>
     <TextField {value} multiline />
 </div>
 

@@ -4,7 +4,8 @@ import type { Tags } from "./stores";
 import localforage from "localforage";
 import { PROMPT, NEGATIVE } from "./tags";
 
-export function savePrompt(obj: Tags) {
+export function savePrompt(obj?: Tags) {
+    if (!obj) localforage.setItem(KEY_PROMPT, {});
     return localforage.setItem(KEY_PROMPT, obj);
 }
 
@@ -24,7 +25,8 @@ export async function loadPrompt(): Promise<Tags> {
     return mergeTags(propmt, PROMPT);
 }
 
-export function saveNegative(obj: Tags) {
+export function saveNegative(obj?: Tags) {
+    if (!obj) localforage.setItem(KEY_NEGATIVE, {});
     return localforage.setItem(KEY_NEGATIVE, obj);
 }
 
@@ -45,4 +47,12 @@ export function generateOutput(tags: Tags, l?: string, r?: string): string {
         .filter(([tagName, tagObj]) => tagObj.count > 0)
         .map(([tagName, tagObj]) => strengthenWord(tagName, tagObj.count, l, r))
         .join(",");
+}
+
+/**
+ * clean all PROMPT & NEGATIVE tags
+ */
+export async function clearAll() {
+    await savePrompt();
+    await saveNegative();
 }
