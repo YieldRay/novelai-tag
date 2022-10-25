@@ -1,19 +1,34 @@
 import { writable } from "svelte/store";
-import { savePrompt, loadPrompt } from "./config";
+import { savePrompt, loadPrompt, loadNegative } from "./config";
 
-export interface CatTags {
-    [catName: string]: {
-        [tagName: string]: number;
-        // number = 0 means tag is not selected
-        // negative numbers is prevented
-    };
+export interface Tag {
+    cat: string;
+    count: number;
+    // number = 0 means tag is not selected
+    // negative numbers is prevented
 }
 
-async function createTagsBindings() {
-    const { subscribe, set, update } = writable<CatTags>(await loadPrompt());
+export interface Tags {
+    [tagName: string]: Tag;
+}
+
+export interface TagDesc extends Tag {
+    tag: string;
+}
+
+export function tagsToTagsDesc(tags: Tags): Array<TagDesc> {
+    return Object.entries(tags).map(([tag, tagObj]) => ({ tag, ...tagObj }));
+}
+
+export function tagsToCats(tags: Tags): Array<string> {
+    return [...new Set(Object.values(tags).map((t) => t.cat))];
+}
+
+async function createTagsStore(tagsSource: Tags) {
+    const { subscribe, set, update } = writable<Tags>(tagsSource);
     let actionCount = 0;
     const saveCount = 5;
-    const save = (obj: CatTags) => {
+    const save = (obj: Tags) => {
         actionCount++;
         if (actionCount >= 5) {
             savePrompt(obj);
@@ -23,34 +38,34 @@ async function createTagsBindings() {
 
     return {
         subscribe,
-        plus(catName: string, tagName: string) {
-            update((catTags) => {
-                catTags[catName][tagName]++;
-                save(catTags);
-                return catTags;
+        plus(tagName: string) {
+            update((tags) => {
+                tags[tagName].count++;
+                save(tags);
+                return tags;
             });
         },
-        minus(catName: string, tagName: string) {
-            update((catTags) => {
-                const lastCount = catTags[catName][tagName];
-                if (lastCount < 1) return catTags;
-                catTags[catName][tagName]--;
-                save(catTags);
-                return catTags;
+        minus(tagName: string) {
+            update((tags) => {
+                const lastCount = tags[tagName].count;
+                if (lastCount < 1) return tags;
+                tags[tagName].count--;
+                save(tags);
+                return tags;
             });
         },
         clear() {
-            update((catTags) => {
-                for (const catName in catTags) {
-                    for (const tagName in catTags[catName]) {
-                        catTags[catName][tagName] = 0;
-                    }
+            update((tags) => {
+                for (const tagName in tags) {
+                    tags[tagName].count = 0;
                 }
-                save(catTags);
-                return catTags;
+                save(tags);
+                return tags;
             });
         },
     };
 }
 
-export const tags = await createTagsBindings();
+export const promptTagsPromise = (async () => createTagsStore(await loadPrompt()))();
+export type TagsStore = Awaited<ReturnType<typeof createTagsStore>>;
+export const negativeTagsPromise = (async () => createTagsStore(await loadNegative()))();
