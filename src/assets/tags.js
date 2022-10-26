@@ -890,11 +890,13 @@ const data = {
 function modifyData(data) {
     const tags = {};
     for (const [catName, tagsObj] of Object.entries(data)) {
+        tags[catName] = {};
         for (const [cn, tagName] of Object.entries(tagsObj)) {
-            tags[tagName] = { cat: catName, cn, count: 0 };
+            tags[catName][tagName] = { cn };
         }
     }
     return tags;
 }
 
+// console.log(modifyData(data));
 export default modifyData(data);

@@ -1,43 +1,36 @@
 const KEY_PROMPT = "PROMPT";
 const KEY_NEGATIVE = "NEGATIVE";
 
-import type { Tags } from "./stores";
+import type { CatTags, TagInfo } from "./stores";
 import localforage from "localforage";
+import useDeepMerge from "@fastify/deepmerge";
+const deepMerge = useDeepMerge();
 
-// import Data from "../assets/tagsData";
-import _Data from "../assets/tags";
-const Data: Tags = _Data as Tags;
+async function importData(): Promise<CatTags> {
+    const { default: data } = (await import("../assets/tags")) as any;
+    return data;
+}
 
-export function savePrompt(obj?: Tags) {
+export function savePrompt(obj?: CatTags) {
     if (!obj) localforage.removeItem(KEY_PROMPT);
     return localforage.setItem(KEY_PROMPT, obj);
 }
 
-function mergeTags(older: Tags, newer: Tags): Tags {
-    const olderTags = Object.keys(older);
-    const newerTags = Object.keys(newer);
-    for (const tagName of newerTags) {
-        if (olderTags.includes(tagName)) continue;
-        older[tagName] = newer[tagName];
-    }
-    return older;
+export async function loadPrompt(): Promise<CatTags> {
+    const propmt = await localforage.getItem<CatTags>(KEY_PROMPT);
+    if (!propmt) return await importData();
+    return deepMerge(propmt, await importData());
 }
 
-export async function loadPrompt(): Promise<Tags> {
-    const propmt = await localforage.getItem<Tags>(KEY_PROMPT);
-    if (!propmt) return Data;
-    return mergeTags(propmt, Data);
-}
-
-export function saveNegative(obj?: Tags) {
+export function saveNegative(obj?: CatTags) {
     if (!obj) localforage.removeItem(KEY_NEGATIVE);
     return localforage.setItem(KEY_NEGATIVE, obj);
 }
 
-export async function loadNegative(): Promise<Tags> {
-    const negative = await localforage.getItem<Tags>(KEY_NEGATIVE);
-    if (!negative) return Data;
-    return mergeTags(negative, Data);
+export async function loadNegative(): Promise<CatTags> {
+    const negative = await localforage.getItem<CatTags>(KEY_NEGATIVE);
+    if (!negative) return await importData();
+    return deepMerge(negative, await importData());
 }
 
 function strengthenWord(str: string, count: number, l = "{", r = "}"): string {
@@ -46,11 +39,24 @@ function strengthenWord(str: string, count: number, l = "{", r = "}"): string {
     return l.repeat(count - 1) + str + r.repeat(count - 1);
 }
 
-export function generateOutput(tags: Tags, l?: string, r?: string): string {
-    return Object.entries(tags)
-        .filter(([tagName, tagObj]) => tagObj.count > 0)
-        .map(([tagName, tagObj]) => strengthenWord(tagName, tagObj.count, l, r))
-        .join(",");
+export interface TagDesc extends TagInfo {
+    cat: string;
+    tag: string;
+}
+export function tagsToTagsDesc(catTags: CatTags): Array<TagDesc> {
+    const values: Array<TagDesc> = [];
+    for (const [catName, tagsObj] of Object.entries(catTags)) {
+        for (const [tagName, tagInfo] of Object.entries(tagsObj)) {
+            values.push({ cat: catName, tag: tagName, count: tagInfo.count });
+        }
+    }
+
+    return values;
+}
+
+export function generateOutput(catTags: CatTags, l?: string, r?: string): string {
+    const values = tagsToTagsDesc(catTags).filter(({ count }) => count > 0);
+    return values.map(({ tag, count }) => strengthenWord(tag, count, l, r)).join(",");
 }
 
 /**

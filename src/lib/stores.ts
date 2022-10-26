@@ -1,23 +1,24 @@
 import { writable, derived } from "svelte/store";
 import { savePrompt, saveNegative, loadPrompt, loadNegative, generateOutput } from "./config";
 
-export interface Tag {
-    cat: string;
-    count: number;
+export interface TagInfo {
+    count?: number; // if `count` is unset, equal to it's zero
     // number = 0 means tag is not selected
     // negative numbers is prevented
     cn?: string;
 }
-
-export interface Tags {
-    [tagName: string]: Tag;
+export interface CatTags {
+    // tags seprated in cats
+    [catName: string]: {
+        [tagName: string]: TagInfo;
+    };
 }
 
-async function createTagsStore(tagsSource: Tags, saveTags: typeof savePrompt) {
-    const { subscribe, set, update } = writable<Tags>(tagsSource);
+async function createTagsStore(tagsSource: CatTags, saveTags: typeof savePrompt) {
+    const { subscribe, set, update } = writable<CatTags>(tagsSource);
     let actionCount = 0;
     const saveCount = 5;
-    const save = (obj: Tags) => {
+    const save = (obj: CatTags) => {
         actionCount++;
         if (actionCount >= 5) {
             saveTags(obj);
@@ -27,26 +28,30 @@ async function createTagsStore(tagsSource: Tags, saveTags: typeof savePrompt) {
 
     return {
         subscribe,
-        plus(tagName: string) {
+        plus(cat: string, tag: string) {
             update((tags) => {
-                tags[tagName].count++;
+                if (!tags[cat][tag].count) tags[cat][tag].count = 0;
+                tags[cat][tag].count++;
                 save(tags);
                 return tags;
             });
         },
-        minus(tagName: string) {
+        minus(cat: string, tag: string) {
             update((tags) => {
-                const lastCount = tags[tagName].count;
+                if (!tags[cat][tag].count) tags[cat][tag].count = 0;
+                const lastCount = tags[cat][tag].count;
                 if (lastCount < 1) return tags;
-                tags[tagName].count--;
+                tags[cat][tag].count--;
                 save(tags);
                 return tags;
             });
         },
         reset() {
             update((tags) => {
-                for (const tagName in tags) {
-                    tags[tagName].count = 0;
+                for (const cat in tags) {
+                    for (const tag in tags[cat]) {
+                        tags[cat][tag].count = 0;
+                    }
                 }
                 save(tags);
                 return tags;
@@ -71,14 +76,7 @@ export function createTagsString(tagsStore: TagsStore) {
 }
 
 export function createCatsStore(tagsStore: TagsStore) {
-    return derived(tagsStore, ($tagsStore) => [...new Set(Object.values($tagsStore).map((t) => t.cat))]);
-}
-
-export interface TagDesc extends Tag {
-    tag: string;
-}
-export function createTagsDescStore(tagsStore: TagsStore) {
-    return derived(tagsStore, ($tagsStore) => Object.entries($tagsStore).map(([tag, tagObj]) => ({ tag, ...tagObj })));
+    return derived(tagsStore, ($tagsStore) => Object.keys($tagsStore));
 }
 
 export const promptTagsPromise = (async () => createTagsStore(await loadPrompt(), savePrompt))();

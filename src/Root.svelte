@@ -1,11 +1,9 @@
 <script>
-    import TagInputBind from "./components/TagInputBind.svelte";
     import { promptTagsPromise, negativeTagsPromise, bracketsStore } from "./lib/stores";
+    import TagInputBind from "./components/TagInputBind.svelte";
+    import Settings from "./components/Settings.svelte";
     import { savePrompt, saveNegative } from "./lib/config";
     import { Switch, Button } from "attractions";
-    import { clearAll } from "./lib/config";
-    import getToast from "./lib/toast";
-    const toast = getToast();
 
     // promptTagsPromise.then((ts) => ts.subscribe(console.log));
 
@@ -19,6 +17,7 @@
         if (na_or_sd) bracketsStore.set(["(", ")"]);
         else bracketsStore.set(["{", "}"]);
     }
+    let isSettingsOpen = false;
 </script>
 
 <div style="display: flex; justify-content: space-between">
@@ -31,14 +30,9 @@
             {/if}
         </span>
     </Switch>
-    <Button
-        on:click={async () => {
-            (await promptTagsPromise).clear();
-            (await negativeTagsPromise).clear();
-            await clearAll();
-            toast("清除完成");
-        }}>清除数据</Button
-    >
+
+    <Button on:click={() => (isSettingsOpen = true)}>设置</Button>
+    <Settings bind:open={isSettingsOpen} />
 </div>
 
 <TagInputBind info label="prompt" tagsStorePromise={promptTagsPromise} />

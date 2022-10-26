@@ -1,27 +1,24 @@
 <script type="ts">
     export let tagsStore: TagsStore;
-
-    import { TagsStore, createCatsStore, createTagsDescStore } from "../lib/stores";
-    // import { Tabs } from "attractions";
+    import { TagsStore, createCatsStore } from "../lib/stores";
     import Tabs from "./Tabs.svelte";
     import Tag from "./Tag.svelte";
-
     const catNames = createCatsStore(tagsStore);
-    const tags = createTagsDescStore(tagsStore);
-
     let currentTagName = $catNames[0];
 </script>
 
-<div style="overflow-x: auto;">
-    <!-- <Tabs name="menu" items={$catNames} bind:value={currentTagName} /> -->
-    <Tabs bind:value={currentTagName} items={$catNames} />
-</div>
+<Tabs bind:value={currentTagName} items={$catNames} />
 <div class="box">
-    {#each $tags as { cat, tag, cn, count } (tag)}
-        {#if currentTagName === cat}
-            <Tag {count} tag={cn || tag} on:minus={() => tagsStore.minus(tag)} on:plus={() => tagsStore.plus(tag)} />
-        {/if}
-    {/each}
+    {#if typeof $tagsStore[currentTagName] === "object"}
+        {#each Object.entries($tagsStore[currentTagName]) as [tag, tagInfo] (tag)}
+            <Tag
+                count={tagInfo.count || 0}
+                tag={tagInfo.cn || tag}
+                on:minus={() => tagsStore.minus(currentTagName, tag)}
+                on:plus={() => tagsStore.plus(currentTagName, tag)}
+            />
+        {/each}
+    {/if}
 </div>
 
 <style>

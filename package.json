@@ -19,6 +19,7 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
+    "@fastify/deepmerge": "^1.1.0",
     "localforage": "^1.10.0",
     "svelte-notifications": "^0.9.97"
   }

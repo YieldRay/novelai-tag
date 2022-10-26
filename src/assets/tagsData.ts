@@ -11,20 +11,4 @@ const data = {
     },
 };
 
-import type { Tag, Tags } from "../lib/stores";
-interface Data {
-    [catName: string]: {
-        [tagName: string]: any;
-    };
-}
-function modifyData(data: Data): Tags {
-    const tags = {};
-    for (const [catName, tagsObj] of Object.entries(data)) {
-        for (const [tagName, tagObj] of Object.entries(tagsObj)) {
-            tags[tagName] = { ...tagObj, cat: catName, count: 0 };
-        }
-    }
-    return tags;
-}
-
-export default modifyData(data);
+export default data;
