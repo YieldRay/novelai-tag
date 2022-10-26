@@ -1,9 +1,12 @@
 <script>
     import { promptTagsPromise, negativeTagsPromise, bracketsStore } from "./lib/stores";
-    import TagInputBind from "./components/TagInputBind.svelte";
-    import Settings from "./components/Settings.svelte";
+    import TagArea from "./components/TagArea.svelte";
+    import InputArea from "./components/InputArea.svelte";
+    import { Card } from "attractions";
+
+    import SettingsButton from "./components/SettingsButton.svelte";
     import { savePrompt, saveNegative } from "./lib/config";
-    import { Switch, Button } from "attractions";
+    import { Switch, Loading } from "attractions";
 
     // promptTagsPromise.then((ts) => ts.subscribe(console.log));
 
@@ -17,7 +20,6 @@
         if (na_or_sd) bracketsStore.set(["(", ")"]);
         else bracketsStore.set(["{", "}"]);
     }
-    let isSettingsOpen = false;
 </script>
 
 <div style="display: flex; justify-content: space-between">
@@ -31,13 +33,25 @@
         </span>
     </Switch>
 
-    <Button on:click={() => (isSettingsOpen = true)}>设置</Button>
-    <Settings bind:open={isSettingsOpen} />
+    {#await promptTagsPromise then tagsStore}
+        <SettingsButton {tagsStore} />
+    {/await}
 </div>
 
-<TagInputBind info label="prompt" tagsStorePromise={promptTagsPromise} />
+<Card outline>
+    {#await promptTagsPromise}
+        <Loading />
+    {:then promptTags}
+        <InputArea info label="prompt" tagsStore={promptTags} />
+        <TagArea tagsStore={promptTags} />
+    {/await}
+</Card>
 <br />
-<TagInputBind attention label="negative" tagsStorePromise={negativeTagsPromise} />
-
-<style>
-</style>
+<Card outline>
+    {#await negativeTagsPromise}
+        <Loading />
+    {:then negativeTags}
+        <InputArea info label="negative" tagsStore={negativeTags} />
+        <TagArea tagsStore={negativeTags} />
+    {/await}
+</Card>

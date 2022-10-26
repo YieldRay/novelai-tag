@@ -46,16 +46,22 @@ async function createTagsStore(tagsSource: CatTags, saveTags: typeof savePrompt)
                 return tags;
             });
         },
-        reset() {
-            update((tags) => {
-                for (const cat in tags) {
-                    for (const tag in tags[cat]) {
-                        tags[cat][tag].count = 0;
+        reset(cat?: string, tag?: string) {
+            if (cat && tag)
+                update((tags) => {
+                    tags[cat][tag].count = 0;
+                    return tags;
+                });
+            else
+                update((tags) => {
+                    for (const cat in tags) {
+                        for (const tag in tags[cat]) {
+                            tags[cat][tag].count = 0;
+                        }
                     }
-                }
-                save(tags);
-                return tags;
-            });
+                    save(tags);
+                    return tags;
+                });
         },
         clear() {
             set({});

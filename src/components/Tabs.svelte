@@ -21,10 +21,11 @@
         color: slateblue;
         border: none;
         border-bottom: 2px rgba(0, 0, 0, 0.1) solid;
-        padding: 0.5em 1em;
+        padding: 0.8em 1em;
         background-color: transparent;
         transition: all 0.1s;
-        border-radius: 0.2em;
+        border-top-left-radius: 0.2em;
+        border-top-right-radius: 0.2em;
     }
     button:hover {
         background-color: rgba(0, 0, 0, 0.1);

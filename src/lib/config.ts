@@ -43,15 +43,29 @@ export interface TagDesc extends TagInfo {
     cat: string;
     tag: string;
 }
-export function tagsToTagsDesc(catTags: CatTags): Array<TagDesc> {
+export function tagsToTagsDesc(catTags: CatTags, isRemoveCount = false): Array<TagDesc> {
     const values: Array<TagDesc> = [];
     for (const [catName, tagsObj] of Object.entries(catTags)) {
         for (const [tagName, tagInfo] of Object.entries(tagsObj)) {
-            values.push({ cat: catName, tag: tagName, count: tagInfo.count });
+            const obj = { cat: catName, tag: tagName, count: tagInfo.count };
+            if (isRemoveCount) delete obj.count;
+            values.push(obj);
         }
     }
-
     return values;
+}
+
+export function exportData(catTags: CatTags, selectedCats?: Array<string>): CatTags {
+    const data: CatTags = {};
+    for (const [catName, tagsObj] of Object.entries(catTags)) {
+        if (Array.isArray(selectedCats) && !selectedCats.includes(catName)) continue;
+        data[catName] = tagsObj;
+        for (const [tagName, tagInfo] of Object.entries(tagsObj)) {
+            data[catName][tagName] = { ...tagInfo };
+            delete data[catName][tagName].count;
+        }
+    }
+    return data;
 }
 
 export function generateOutput(catTags: CatTags, l?: string, r?: string): string {

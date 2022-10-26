@@ -11,3 +11,7 @@ export default function toastBuilder() {
         });
     };
 }
+
+//? Usage:
+//  import getToast from "toast";
+//  const toast = getToast();

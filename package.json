@@ -1,26 +1,26 @@
 {
-  "name": "novelai-tag",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^1.0.2",
-    "attractions": "^3.7.0",
-    "postcss": "^8.4.18",
-    "sass": "^1.55.0",
-    "svelte": "^3.49.0",
-    "svelte-preprocess": "^4.10.7",
-    "typescript": "^4.8.4",
-    "vite": "^3.1.0"
-  },
-  "dependencies": {
-    "@fastify/deepmerge": "^1.1.0",
-    "localforage": "^1.10.0",
-    "svelte-notifications": "^0.9.97"
-  }
+    "name": "novelai-tag",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "devDependencies": {
+        "@sveltejs/vite-plugin-svelte": "^1.1.0",
+        "postcss": "^8.4.18",
+        "sass": "^1.55.0",
+        "svelte": "^3.52.0",
+        "svelte-preprocess": "^4.10.7",
+        "typescript": "^4.8.4",
+        "vite": "^3.1.8",
+        "attractions": "^3.7.0",
+        "svelte-notifications": "^0.9.98"
+    },
+    "dependencies": {
+        "@fastify/deepmerge": "^1.1.0",
+        "localforage": "^1.10.0"
+    }
 }
