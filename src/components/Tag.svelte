@@ -8,7 +8,7 @@
     const minus = () => dispatch("minus");
 </script>
 
-<div class="box">
+<div class="box" style:background={count ? "#f4e9ff" : "rgba(0,0,0,0.05)"}>
     <button class="btn" on:click={minus}>-</button>
     <div class="up-down">
         <div class="tag">{tag}</div>
