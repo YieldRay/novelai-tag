@@ -1,6 +1,7 @@
 <script type="ts">
     export let count: number;
     export let tag: string;
+    
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
     export const clickTag = () => dispatch("clickTag");

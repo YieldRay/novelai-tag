@@ -1,25 +1,21 @@
 <script type="ts">
     import { tagsStorePromise, bracketsStore, type CatTags } from "./lib/stores";
+    import { Card, Switch, Loading } from "attractions";
+    import { saveTags } from "./lib/db";
     import TagArea from "./components/TagArea.svelte";
     import InputArea from "./components/InputArea.svelte";
-    import { Card } from "attractions";
-
     import SettingsButton from "./components/SettingsButton.svelte";
-    import { saveTags } from "./lib/config";
-    import { Switch, Loading } from "attractions";
 
     window.onbeforeunload = () => {
         tagsStorePromise.then((ts) => ts.subscribe((td) => saveTags(td)));
     };
 
     let na_or_sd = true;
-    $: {
-        if (na_or_sd) bracketsStore.set(["(", ")"]);
-        else bracketsStore.set(["{", "}"]);
-    }
+    $: if (na_or_sd) bracketsStore.set(["(", ")"]);
+    else bracketsStore.set(["{", "}"]);
 
     let catTags: CatTags;
-    (async () => {
+    $: (async () => {
         const tags = await tagsStorePromise;
         tags.subscribe((t) => (catTags = t));
     })();

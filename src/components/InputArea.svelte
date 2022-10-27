@@ -1,18 +1,16 @@
 <script type="ts">
+    export let label = "default-label";
+    export let info: boolean = false;
+    export let attention: boolean = false;
+    export let tagsStore: TagsStore;
+    export let prop: TagType;
+
     import type { TagsStore, TagType } from "../lib/stores";
     import { TextField, Button, Dot } from "attractions";
 
     import getToast from "../lib/toast";
     const toast = getToast();
 
-    export let label = "default-label";
-
-    export let info: boolean = false;
-    export let attention: boolean = false;
-
-    export let tagsStore: TagsStore;
-
-    export let prop: TagType;
     import { createTagsString } from "../lib/stores";
     let tagsString = createTagsString(prop, tagsStore);
 </script>

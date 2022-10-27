@@ -1,7 +1,9 @@
 <script type="ts">
+    export let title: string = "";
+
     import Modal from "./Modal.svelte";
     import { Button } from "attractions";
-    export let title: string = "";
+
     let open = false;
 </script>
 

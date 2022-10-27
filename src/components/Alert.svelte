@@ -1,16 +1,16 @@
 <script type="ts">
-    import { Button, Subhead } from "attractions";
-    import { createEventDispatcher } from "svelte";
-    import Modal from "./Modal.svelte";
     export let title = "注意";
-    const dispatch = createEventDispatcher();
-    export const confirmEvent = () => dispatch("confirm");
     export let confirm = "确定";
-    export const cancelEvent = () => dispatch("cancel");
     export let cancel = "取消";
-
     export let open = false;
     export let noButton = false;
+
+    import { createEventDispatcher } from "svelte";
+    const dispatch = createEventDispatcher();
+    export const confirmEvent = () => dispatch("confirm");
+    export const cancelEvent = () => dispatch("cancel");
+    import { Button, Subhead } from "attractions";
+    import Modal from "./Modal.svelte";
 </script>
 
 <Modal {title} bind:open>

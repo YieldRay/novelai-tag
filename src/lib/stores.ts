@@ -1,5 +1,6 @@
 import { writable, derived } from "svelte/store";
-import { saveTags, generateOutput, loadTags } from "./config";
+import { saveTags, loadTags } from "./db";
+import { generateOutput } from "./utils";
 
 export interface TagInfo {
     // if `prompt`|`negative` is unset, equal to it's zero

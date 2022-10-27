@@ -1,10 +1,10 @@
 <script type="ts">
-    import { Table } from "attractions";
-    import type { TagInfo } from "src/lib/stores";
-
     export let cat: string;
     export let tag: string;
     export let tagInfo: TagInfo;
+
+    import { Table } from "attractions";
+    import type { TagInfo } from "src/lib/stores";
 </script>
 
 <Table

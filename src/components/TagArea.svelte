@@ -1,13 +1,13 @@
 <script type="ts">
     export let tagsStore: TagsStore;
+    export let prop: TagType;
+
     import { TagsStore, createCatsStore, TagType } from "../lib/stores";
     import { Button } from "attractions";
     import TagInfo from "./TagInfo.svelte";
     import Tabs from "./Tabs.svelte";
     import Tag from "./Tag.svelte";
     import Alert from "./Alert.svelte";
-
-    export let prop: TagType;
 
     const catNames = createCatsStore(tagsStore);
     let currentCatName = $catNames[0];
@@ -53,7 +53,7 @@
         on:confirm={() => tagsStore.reset(prop, currentCatName, currentClickTag)}
         on:cancel={() => {}}
     >
-        <TagInfo tag={currentClickTag} cat={currentCatName} tagInfo={tag} />
+        <!-- <TagInfo tag={currentClickTag} cat={currentCatName} tagInfo={tag} /> -->
         是否取消选中该 TAG ？
     </Alert>
 
@@ -62,11 +62,11 @@
 
         {#if tag.nonpreset}
             <div style="display:flex; justify-content:space-between;align-content:center">
-                该tag是非预设tag
+                该 TAG 是非预设 TAG
                 <Button small on:click={() => tagsStore.remove(currentCatName, currentClickTag)}>删除</Button>
             </div>
         {:else}
-            该 TAG 是预设 TAG 。
+            该 TAG 是预设 TAG
         {/if}
     </Alert>
 {/if}
