@@ -15,7 +15,7 @@
     let tagsString = createTagsString(tagsStore);
 </script>
 
-<div style="display: flex;justify-content:space-between">
+<div class="flex">
     <div>
         <Button
             on:click={async () => {
@@ -40,3 +40,10 @@
     </div>
 </div>
 <TextField value={$tagsString} multiline />
+
+<style>
+    .flex {
+        display: flex;
+        justify-content: space-between;
+    }
+</style>

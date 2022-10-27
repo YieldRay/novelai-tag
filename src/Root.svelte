@@ -1,5 +1,5 @@
-<script>
-    import { promptTagsPromise, negativeTagsPromise, bracketsStore } from "./lib/stores";
+<script type="ts">
+    import { promptTagsPromise, negativeTagsPromise, bracketsStore, type CatTags } from "./lib/stores";
     import TagArea from "./components/TagArea.svelte";
     import InputArea from "./components/InputArea.svelte";
     import { Card } from "attractions";
@@ -7,8 +7,6 @@
     import SettingsButton from "./components/SettingsButton.svelte";
     import { savePrompt, saveNegative } from "./lib/config";
     import { Switch, Loading } from "attractions";
-
-    // promptTagsPromise.then((ts) => ts.subscribe(console.log));
 
     window.onbeforeunload = () => {
         promptTagsPromise.then((ts) => ts.subscribe((td) => savePrompt(td)));
@@ -20,6 +18,12 @@
         if (na_or_sd) bracketsStore.set(["(", ")"]);
         else bracketsStore.set(["{", "}"]);
     }
+
+    let catTags: CatTags;
+    (async () => {
+        const negativeTags = await negativeTagsPromise;
+        negativeTags.subscribe((t) => (catTags = t));
+    })();
 </script>
 
 <div style="display: flex; justify-content: space-between">
@@ -33,9 +37,9 @@
         </span>
     </Switch>
 
-    {#await promptTagsPromise then tagsStore}
-        <SettingsButton {tagsStore} />
-    {/await}
+    {#if catTags}
+        <SettingsButton {catTags} />
+    {/if}
 </div>
 
 <Card outline>
@@ -46,12 +50,13 @@
         <TagArea tagsStore={promptTags} />
     {/await}
 </Card>
+
 <br />
 <Card outline>
     {#await negativeTagsPromise}
         <Loading />
     {:then negativeTags}
-        <InputArea info label="negative" tagsStore={negativeTags} />
+        <InputArea attention label="negative" tagsStore={negativeTags} />
         <TagArea tagsStore={negativeTags} />
     {/await}
 </Card>

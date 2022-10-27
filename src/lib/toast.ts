@@ -1,7 +1,14 @@
 import type { Position } from "svelte-notifications";
 import { getNotificationsContext } from "svelte-notifications";
 
-export default function toastBuilder() {
+const style = document.createElement("style");
+style.innerHTML = `
+.position-top-center {
+    z-index: 9999;
+}`;
+document.head.appendChild(style);
+
+export default function () {
     const { addNotification } = getNotificationsContext();
     return function toast(text: string, position: Position = "top-center") {
         addNotification({

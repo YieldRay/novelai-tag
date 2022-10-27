@@ -1,7 +1,8 @@
 <script type="ts">
     export let tagsStore: TagsStore;
     import { TagsStore, createCatsStore } from "../lib/stores";
-    import { Chip } from "attractions";
+    import { Button, Chip } from "attractions";
+    import TagInfo from "./TagInfo.svelte";
     import Tabs from "./Tabs.svelte";
     import Tag from "./Tag.svelte";
     import Alert from "./Alert.svelte";
@@ -22,8 +23,12 @@
             <Tag
                 count={count || 0}
                 tag={cn || tag}
-                on:minus={() => tagsStore.minus(currentCatName, tag)}
-                on:plus={() => tagsStore.plus(currentCatName, tag)}
+                on:minus={() => {
+                    tagsStore.minus(currentCatName, tag);
+                }}
+                on:plus={() => {
+                    tagsStore.plus(currentCatName, tag);
+                }}
                 on:clickTag={() => {
                     currentClickTag = tag;
                     isTagAlertOpen = true;
@@ -37,21 +42,30 @@
     {/if}
 </div>
 
-<Alert
-    bind:open={isResetTagAlertOpen}
-    on:confirm={() => tagsStore.reset(currentCatName, currentClickTag)}
-    on:cancel={() => {}}
->
-    是否取消选中该 tag ?
-    {#if currentClickTag && $tagsStore[currentCatName][currentClickTag]}
-        <Chip small>
-            {currentClickTag} =
-            {JSON.stringify($tagsStore[currentCatName][currentClickTag])}
-        </Chip>
-    {/if}
-</Alert>
+{#if currentClickTag && currentClickTag in $tagsStore[currentCatName]}
+    {@const tag = $tagsStore[currentCatName][currentClickTag]}
+    <Alert
+        bind:open={isResetTagAlertOpen}
+        on:confirm={() => tagsStore.reset(currentCatName, currentClickTag)}
+        on:cancel={() => {}}
+    >
+        <TagInfo tag={currentClickTag} cat={currentCatName} tagInfo={tag} />
+        是否取消选中该 TAG ？
+    </Alert>
 
-<Alert bind:open={isTagAlertOpen}>功能待实现</Alert>
+    <Alert noButton bind:open={isTagAlertOpen}>
+        <TagInfo tag={currentClickTag} cat={currentCatName} tagInfo={tag} />
+
+        {#if tag.nonpreset}
+            <div style="display:flex; justify-content:space-between;align-content:center">
+                该tag是非预设tag
+                <Button small on:click={() => tagsStore.remove(currentCatName, currentClickTag)}>删除</Button>
+            </div>
+        {:else}
+            该 TAG 是预设 TAG 。
+        {/if}
+    </Alert>
+{/if}
 
 <style>
     .box {

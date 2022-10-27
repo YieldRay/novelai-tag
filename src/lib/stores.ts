@@ -6,6 +6,7 @@ export interface TagInfo {
     // number = 0 means tag is not selected
     // negative numbers is prevented
     cn?: string;
+    nonpreset?: boolean;
 }
 export interface CatTags {
     // tags seprated in cats
@@ -20,7 +21,7 @@ async function createTagsStore(tagsSource: CatTags, saveTags: typeof savePrompt)
     const saveCount = 5;
     const save = (obj: CatTags) => {
         actionCount++;
-        if (actionCount >= 5) {
+        if (actionCount >= saveCount) {
             saveTags(obj);
             actionCount = 0;
         }
@@ -63,9 +64,28 @@ async function createTagsStore(tagsSource: CatTags, saveTags: typeof savePrompt)
                     return tags;
                 });
         },
+        add(cat: string, tag: string, info: TagInfo) {
+            update((tags) => {
+                if (tags?.[cat]?.[tag]) return tags;
+                if (!tags[cat]) tags[cat] = {};
+                tags[cat][tag] = { ...info, nonpreset: true };
+                console.log(tags[cat][tag]);
+                //! This func is only for use add !
+                return tags;
+            });
+        },
+        remove(cat: string, tag?: string) {
+            update((tags) => {
+                if (!tag) delete tags[cat];
+                if (tags[cat][tag].nonpreset) delete tags[cat][tag];
+                //! same as above !
+                return tags;
+            });
+        },
         clear() {
             set({});
         },
+        set,
     };
 }
 

@@ -6,7 +6,7 @@ import localforage from "localforage";
 import useDeepMerge from "@fastify/deepmerge";
 const deepMerge = useDeepMerge();
 
-async function importData(): Promise<CatTags> {
+async function importPreset(): Promise<CatTags> {
     const { default: data } = (await import("../assets/tags")) as any;
     return data;
 }
@@ -18,8 +18,8 @@ export function savePrompt(obj?: CatTags) {
 
 export async function loadPrompt(): Promise<CatTags> {
     const propmt = await localforage.getItem<CatTags>(KEY_PROMPT);
-    if (!propmt) return await importData();
-    return deepMerge(propmt, await importData());
+    if (!propmt) return await importPreset();
+    return deepMerge(propmt, await importPreset());
 }
 
 export function saveNegative(obj?: CatTags) {
@@ -29,8 +29,8 @@ export function saveNegative(obj?: CatTags) {
 
 export async function loadNegative(): Promise<CatTags> {
     const negative = await localforage.getItem<CatTags>(KEY_NEGATIVE);
-    if (!negative) return await importData();
-    return deepMerge(negative, await importData());
+    if (!negative) return await importPreset();
+    return deepMerge(negative, await importPreset());
 }
 
 function strengthenWord(str: string, count: number, l = "{", r = "}"): string {
@@ -66,6 +66,22 @@ export function exportData(catTags: CatTags, selectedCats?: Array<string>): CatT
         }
     }
     return data;
+}
+
+export async function importData(json: string) {
+    let data = JSON.parse(json);
+
+    for (const [catName, tagsObj] of Object.entries(data)) {
+        if (typeof tagsObj === "object")
+            for (const [tagName, tagInfo] of Object.entries(tagsObj)) {
+                if (typeof tagInfo === "object") data[catName][tagName] = { ...tagInfo, nonpreset: true };
+            }
+    }
+
+    data = deepMerge(data, await loadPrompt());
+
+    await savePrompt(data);
+    await saveNegative(data);
 }
 
 export function generateOutput(catTags: CatTags, l?: string, r?: string): string {

@@ -5,9 +5,8 @@
     const dispatch = createEventDispatcher();
     export const clickTag = () => dispatch("clickTag");
     export const clickCount = () => dispatch("clickCount");
-
-    const plus = () => dispatch("plus");
-    const minus = () => dispatch("minus");
+    export const plus = () => dispatch("plus");
+    export const minus = () => dispatch("minus");
 </script>
 
 <div class="box" style:background={count ? "#f4e9ff" : "rgba(0,0,0,0.02)"}>

@@ -5,7 +5,7 @@
     let open = false;
 </script>
 
-<Button on:click={() => (open = true)}>{title}</Button>
+<Button {...$$restProps} on:click={() => (open = true)}>{title}</Button>
 <Modal {title} bind:open>
     <slot />
 </Modal>
