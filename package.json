@@ -10,17 +10,18 @@
     },
     "devDependencies": {
         "@sveltejs/vite-plugin-svelte": "^1.1.0",
+        "attractions": "^3.7.0",
         "postcss": "^8.4.18",
         "sass": "^1.55.0",
         "svelte": "^3.52.0",
+        "svelte-notifications": "^0.9.98",
         "svelte-preprocess": "^4.10.7",
         "typescript": "^4.8.4",
-        "vite": "^3.2.0",
-        "attractions": "^3.7.0",
-        "svelte-notifications": "^0.9.98"
+        "vite": "^3.2.0"
     },
     "dependencies": {
         "@fastify/deepmerge": "^1.1.0",
+        "@ungap/structured-clone": "^1.0.1",
         "localforage": "^1.10.0"
     }
 }

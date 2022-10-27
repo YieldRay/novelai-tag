@@ -4,7 +4,9 @@
     import { Button, TextField, FormField } from "attractions";
     import getToast from "../lib/toast";
     const toast = getToast();
-
+    // @ts-ignore
+    import structuredClone from "@ungap/structured-clone";
+    
     import CheckboxGroup from "./CheckBoxGroup.svelte";
     import Alert from "./Alert.svelte";
     import ModalButton from "./ModalButton.svelte";
