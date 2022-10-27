@@ -6,6 +6,7 @@
     import Tabs from "./Tabs.svelte";
     import Tag from "./Tag.svelte";
     import Alert from "./Alert.svelte";
+    import { keys } from "localforage";
     const catNames = createCatsStore(tagsStore);
     let currentCatName = $catNames[0];
     let currentClickTag = "";
@@ -42,7 +43,7 @@
     {/if}
 </div>
 
-{#if currentClickTag && currentClickTag in $tagsStore[currentCatName]}
+{#if currentClickTag && Object.keys($tagsStore).length > 0 && currentClickTag in $tagsStore[currentCatName]}
     {@const tag = $tagsStore[currentCatName][currentClickTag]}
     <Alert
         bind:open={isResetTagAlertOpen}
