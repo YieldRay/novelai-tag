@@ -1,12 +1,14 @@
 <script type="ts">
     export let tagsStore: TagsStore;
-    import { TagsStore, createCatsStore } from "../lib/stores";
-    import { Button, Chip } from "attractions";
+    import { TagsStore, createCatsStore, TagType } from "../lib/stores";
+    import { Button } from "attractions";
     import TagInfo from "./TagInfo.svelte";
     import Tabs from "./Tabs.svelte";
     import Tag from "./Tag.svelte";
     import Alert from "./Alert.svelte";
-    import { keys } from "localforage";
+
+    export let prop: TagType;
+
     const catNames = createCatsStore(tagsStore);
     let currentCatName = $catNames[0];
     let currentClickTag = "";
@@ -20,15 +22,16 @@
     {#if typeof $tagsStore[currentCatName] === "object"}
         <!-- 渲染选中分类的tags -->
         {#each Object.entries($tagsStore[currentCatName]) as [tag, tagInfo] (tag)}
-            {@const { count, cn } = tagInfo}
+            {@const { cn } = tagInfo}
+            {@const count = tagInfo[prop]}
             <Tag
                 count={count || 0}
                 tag={cn || tag}
                 on:minus={() => {
-                    tagsStore.minus(currentCatName, tag);
+                    tagsStore.minus(prop, currentCatName, tag);
                 }}
                 on:plus={() => {
-                    tagsStore.plus(currentCatName, tag);
+                    tagsStore.plus(prop, currentCatName, tag);
                 }}
                 on:clickTag={() => {
                     currentClickTag = tag;
@@ -47,7 +50,7 @@
     {@const tag = $tagsStore[currentCatName][currentClickTag]}
     <Alert
         bind:open={isResetTagAlertOpen}
-        on:confirm={() => tagsStore.reset(currentCatName, currentClickTag)}
+        on:confirm={() => tagsStore.reset(prop, currentCatName, currentClickTag)}
         on:cancel={() => {}}
     >
         <TagInfo tag={currentClickTag} cat={currentCatName} tagInfo={tag} />

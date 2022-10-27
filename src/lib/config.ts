@@ -1,7 +1,6 @@
-const KEY_PROMPT = "PROMPT";
-const KEY_NEGATIVE = "NEGATIVE";
+const KEY = "NOVEL-AI-TAG";
 
-import type { CatTags, TagInfo } from "./stores";
+import type { CatTags, TagInfo, TagType } from "./stores";
 import localforage from "localforage";
 import useDeepMerge from "@fastify/deepmerge";
 const deepMerge = useDeepMerge();
@@ -11,26 +10,15 @@ async function importPreset(): Promise<CatTags> {
     return data;
 }
 
-export function savePrompt(obj?: CatTags) {
-    if (!obj) localforage.removeItem(KEY_PROMPT);
-    return localforage.setItem(KEY_PROMPT, obj);
+export function saveTags(obj?: CatTags) {
+    if (!obj) localforage.removeItem(KEY);
+    return localforage.setItem(KEY, obj);
 }
 
-export async function loadPrompt(): Promise<CatTags> {
-    const propmt = await localforage.getItem<CatTags>(KEY_PROMPT);
+export async function loadTags(): Promise<CatTags> {
+    const propmt = await localforage.getItem<CatTags>(KEY);
     if (!propmt) return await importPreset();
     return deepMerge(propmt, await importPreset());
-}
-
-export function saveNegative(obj?: CatTags) {
-    if (!obj) localforage.removeItem(KEY_NEGATIVE);
-    return localforage.setItem(KEY_NEGATIVE, obj);
-}
-
-export async function loadNegative(): Promise<CatTags> {
-    const negative = await localforage.getItem<CatTags>(KEY_NEGATIVE);
-    if (!negative) return await importPreset();
-    return deepMerge(negative, await importPreset());
 }
 
 function strengthenWord(str: string, count: number, l = "{", r = "}"): string {
@@ -47,8 +35,11 @@ export function tagsToTagsDesc(catTags: CatTags, isRemoveCount = false): Array<T
     const values: Array<TagDesc> = [];
     for (const [catName, tagsObj] of Object.entries(catTags)) {
         for (const [tagName, tagInfo] of Object.entries(tagsObj)) {
-            const obj = { cat: catName, tag: tagName, count: tagInfo.count };
-            if (isRemoveCount) delete obj.count;
+            const obj = { ...tagInfo, cat: catName, tag: tagName };
+            if (isRemoveCount) {
+                delete obj.prompt;
+                delete obj.negative;
+            }
             values.push(obj);
         }
     }
@@ -62,7 +53,8 @@ export function exportData(catTags: CatTags, selectedCats?: Array<string>): CatT
         data[catName] = tagsObj;
         for (const [tagName, tagInfo] of Object.entries(tagsObj)) {
             data[catName][tagName] = { ...tagInfo };
-            delete data[catName][tagName].count;
+            delete data[catName][tagName].prompt;
+            delete data[catName][tagName].negative;
         }
     }
     return data;
@@ -78,15 +70,13 @@ export async function importData(json: string) {
             }
     }
 
-    data = deepMerge(data, await loadPrompt());
-
-    await savePrompt(data);
-    await saveNegative(data);
+    data = deepMerge(data, await loadTags());
+    await saveTags(data);
 }
 
-export function generateOutput(catTags: CatTags, l?: string, r?: string): string {
-    const values = tagsToTagsDesc(catTags).filter(({ count }) => count > 0);
-    return values.map(({ tag, count }) => strengthenWord(tag, count, l, r)).join(",");
+export function generateOutput(PROP: TagType, catTags: CatTags, l?: string, r?: string): string {
+    const values = tagsToTagsDesc(catTags).filter((tag) => tag[PROP] > 0);
+    return values.map((tag) => strengthenWord(tag.tag, tag[PROP], l, r)).join(",");
 }
 
 /**
@@ -94,6 +84,5 @@ export function generateOutput(catTags: CatTags, l?: string, r?: string): string
  */
 export async function clearAll() {
     await localforage.clear();
-    await savePrompt();
-    await saveNegative();
+    await saveTags();
 }

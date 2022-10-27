@@ -31,8 +31,12 @@
             value: Boolean(tagInfo.nonpreset) ? "否" : "是",
         },
         {
-            key: "count",
-            value: tagInfo.count || 0,
+            key: "prompt权重",
+            value: tagInfo.prompt || 0,
+        },
+        {
+            key: "negative权重",
+            value: tagInfo.negative || 0,
         },
     ]}
 />

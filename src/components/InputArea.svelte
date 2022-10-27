@@ -1,5 +1,5 @@
 <script type="ts">
-    import type { TagsStore } from "../lib/stores";
+    import type { TagsStore, TagType } from "../lib/stores";
     import { TextField, Button, Dot } from "attractions";
 
     import getToast from "../lib/toast";
@@ -11,8 +11,10 @@
     export let attention: boolean = false;
 
     export let tagsStore: TagsStore;
+
+    export let prop: TagType;
     import { createTagsString } from "../lib/stores";
-    let tagsString = createTagsString(tagsStore);
+    let tagsString = createTagsString(prop, tagsStore);
 </script>
 
 <div class="flex">
@@ -36,7 +38,7 @@
         </Button>
     </div>
     <div>
-        <Button on:click={() => tagsStore.reset()}>清空</Button>
+        <Button on:click={() => tagsStore.reset(prop)}>清空</Button>
     </div>
 </div>
 <TextField value={$tagsString} multiline />

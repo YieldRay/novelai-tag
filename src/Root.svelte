@@ -1,16 +1,15 @@
 <script type="ts">
-    import { promptTagsPromise, negativeTagsPromise, bracketsStore, type CatTags } from "./lib/stores";
+    import { tagsStorePromise, bracketsStore, type CatTags } from "./lib/stores";
     import TagArea from "./components/TagArea.svelte";
     import InputArea from "./components/InputArea.svelte";
     import { Card } from "attractions";
 
     import SettingsButton from "./components/SettingsButton.svelte";
-    import { savePrompt, saveNegative } from "./lib/config";
+    import { saveTags } from "./lib/config";
     import { Switch, Loading } from "attractions";
 
     window.onbeforeunload = () => {
-        promptTagsPromise.then((ts) => ts.subscribe((td) => savePrompt(td)));
-        negativeTagsPromise.then((ts) => ts.subscribe((td) => saveNegative(td)));
+        tagsStorePromise.then((ts) => ts.subscribe((td) => saveTags(td)));
     };
 
     let na_or_sd = true;
@@ -21,8 +20,8 @@
 
     let catTags: CatTags;
     (async () => {
-        const negativeTags = await negativeTagsPromise;
-        negativeTags.subscribe((t) => (catTags = t));
+        const tags = await tagsStorePromise;
+        tags.subscribe((t) => (catTags = t));
     })();
 </script>
 
@@ -43,20 +42,20 @@
 </div>
 
 <Card outline>
-    {#await promptTagsPromise}
+    {#await tagsStorePromise}
         <Loading />
-    {:then promptTags}
-        <InputArea info label="prompt" tagsStore={promptTags} />
-        <TagArea tagsStore={promptTags} />
+    {:then tagsStore}
+        <InputArea info label="prompt" {tagsStore} prop="prompt" />
+        <TagArea {tagsStore} prop="prompt" />
     {/await}
 </Card>
 
 <br />
 <Card outline>
-    {#await negativeTagsPromise}
+    {#await tagsStorePromise}
         <Loading />
-    {:then negativeTags}
-        <InputArea attention label="negative" tagsStore={negativeTags} />
-        <TagArea tagsStore={negativeTags} />
+    {:then tagsStore}
+        <InputArea attention label="negative" {tagsStore} prop="negative" />
+        <TagArea {tagsStore} prop="negative" />
     {/await}
 </Card>

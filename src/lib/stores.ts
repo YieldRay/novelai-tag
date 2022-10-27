@@ -1,10 +1,12 @@
 import { writable, derived } from "svelte/store";
-import { savePrompt, saveNegative, loadPrompt, loadNegative, generateOutput } from "./config";
+import { saveTags, generateOutput, loadTags } from "./config";
 
 export interface TagInfo {
-    count?: number; // if `count` is unset, equal to it's zero
+    // if `prompt`|`negative` is unset, equal to it's zero
     // number = 0 means tag is not selected
     // negative numbers is prevented
+    prompt?: number;
+    negative?: number;
     cn?: string;
     nonpreset?: boolean;
 }
@@ -15,7 +17,9 @@ export interface CatTags {
     };
 }
 
-async function createTagsStore(tagsSource: CatTags, saveTags: typeof savePrompt) {
+export type TagType = "prompt" | "negative";
+
+async function createTagsStore(tagsSource: CatTags) {
     const { subscribe, set, update } = writable<CatTags>(tagsSource);
     let actionCount = 0;
     const saveCount = 5;
@@ -29,35 +33,37 @@ async function createTagsStore(tagsSource: CatTags, saveTags: typeof savePrompt)
 
     return {
         subscribe,
-        plus(cat: string, tag: string) {
+        plus(PROP: TagType, cat: string, tag: string) {
             update((tags) => {
-                if (!tags[cat][tag].count) tags[cat][tag].count = 0;
-                tags[cat][tag].count++;
+                if (!tags[cat][tag][PROP]) tags[cat][tag][PROP] = 0;
+                tags[cat][tag][PROP]++;
                 save(tags);
                 return tags;
             });
         },
-        minus(cat: string, tag: string) {
+        minus(PROP: TagType, cat: string, tag: string) {
             update((tags) => {
-                if (!tags[cat][tag].count) tags[cat][tag].count = 0;
-                const lastCount = tags[cat][tag].count;
+                if (!tags[cat][tag][PROP]) tags[cat][tag][PROP] = 0;
+                const lastCount = tags[cat][tag][PROP];
                 if (lastCount < 1) return tags;
-                tags[cat][tag].count--;
+                tags[cat][tag][PROP]--;
                 save(tags);
                 return tags;
             });
         },
-        reset(cat?: string, tag?: string) {
+        reset(PROP: TagType, cat?: string, tag?: string) {
+            // reset selected tag
             if (cat && tag)
                 update((tags) => {
-                    tags[cat][tag].count = 0;
+                    tags[cat][tag][PROP] = 0;
                     return tags;
                 });
+            // reset all tags
             else
                 update((tags) => {
                     for (const cat in tags) {
                         for (const tag in tags[cat]) {
-                            tags[cat][tag].count = 0;
+                            tags[cat][tag][PROP] = 0;
                         }
                     }
                     save(tags);
@@ -95,9 +101,9 @@ export const bracketsStore = writable<[string, string]>(["{", "}"]);
 export type TagsStore = Awaited<ReturnType<typeof createTagsStore>>;
 
 //! generate tags string via prompt/negative and depends on brackets
-export function createTagsString(tagsStore: TagsStore) {
+export function createTagsString(PROP: TagType, tagsStore: TagsStore) {
     return derived([tagsStore, bracketsStore], ([$tagsStore, $bracketsStore]) =>
-        generateOutput($tagsStore, ...$bracketsStore)
+        generateOutput(PROP, $tagsStore, ...$bracketsStore)
     );
 }
 
@@ -105,5 +111,4 @@ export function createCatsStore(tagsStore: TagsStore) {
     return derived(tagsStore, ($tagsStore) => Object.keys($tagsStore));
 }
 
-export const promptTagsPromise = (async () => createTagsStore(await loadPrompt(), savePrompt))();
-export const negativeTagsPromise = (async () => createTagsStore(await loadNegative(), saveNegative))();
+export const tagsStorePromise = (async () => createTagsStore(await loadTags()))();

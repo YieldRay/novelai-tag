@@ -1,12 +1,12 @@
 <script type="ts">
-    import { promptTagsPromise, negativeTagsPromise, type CatTags } from "../lib/stores";
+    import { tagsStorePromise, type CatTags } from "../lib/stores";
     import { clearAll, exportData, importData } from "../lib/config";
     import { Button, TextField, FormField } from "attractions";
     import getToast from "../lib/toast";
     const toast = getToast();
     // @ts-ignore
     import structuredClone from "@ungap/structured-clone";
-    
+
     import CheckboxGroup from "./CheckBoxGroup.svelte";
     import Alert from "./Alert.svelte";
     import ModalButton from "./ModalButton.svelte";
@@ -25,8 +25,7 @@
 
     let isClearAlertOpen = false;
     async function addTag({ cat, tag, cn }) {
-        (await promptTagsPromise).add(cat, tag, { cn });
-        (await negativeTagsPromise).add(cat, tag, { cn });
+        (await tagsStorePromise).add(cat, tag, { cn });
     }
     let addTagInfo = {
         cat: "",
@@ -42,8 +41,7 @@
     <Alert bind:open={isClearAlertOpen} on:confirm={() => location.reload()}>清除完成，刷新以重载默认数据</Alert>
     <Button
         on:click={async () => {
-            (await promptTagsPromise).clear();
-            (await negativeTagsPromise).clear();
+            (await tagsStorePromise).clear();
             await clearAll();
             isClearAlertOpen = true;
         }}
