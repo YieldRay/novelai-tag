@@ -1,5 +1,6 @@
 {
     "name": "novelai-tag",
+    "description": "NovelAI Tag Generator",
     "private": true,
     "version": "0.0.0",
     "type": "module",
@@ -17,7 +18,8 @@
         "svelte-notifications": "^0.9.98",
         "svelte-preprocess": "^4.10.7",
         "typescript": "^4.8.4",
-        "vite": "^3.2.0"
+        "vite": "^3.2.0",
+        "vite-plugin-pwa": "^0.13.1"
     },
     "dependencies": {
         "@ungap/structured-clone": "^1.0.1",
