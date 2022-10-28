@@ -8,6 +8,7 @@
         <Root />
     </main>
 </Notifications>
+
 <footer>
     <p>
         Made with ❤ by

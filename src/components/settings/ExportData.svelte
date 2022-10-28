@@ -15,12 +15,13 @@
 
     let cats = Object.keys(tags);
     let selectCats = cats.map((value) => ({ value, selected: true }));
-    let exportedData: CatTags;
+    let exportedData: string;
     $: {
-        exportedData = exportData(
+        const exportedTags = exportData(
             tags,
             selectCats.filter(({ selected }) => selected).map(({ value }) => value)
         );
+        exportedData = JSON.stringify(exportedTags);
     }
 </script>
 
@@ -32,5 +33,5 @@
         >
     </div>
 
-    <TextField style="min-width:50vw;min-height:50vh" value={JSON.stringify(exportedData)} multiline />
+    <TextField style="min-width:50vw;min-height:50vh" value={exportedData} multiline />
 </ModalButton>

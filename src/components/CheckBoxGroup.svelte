@@ -3,7 +3,7 @@
     export let items: Array<{ label?: string; value: string; selected: boolean }> = [];
 </script>
 
-<div style:display="flex" style="flex-wrap:wrap;gap:0.5em">
+<div class="flex">
     {#each items as item (item)}
         <Chip small outline>
             <Checkbox title={item.label || item.value} value={item.label || item.value} bind:checked={item.selected}>
@@ -12,3 +12,11 @@
         </Chip>
     {/each}
 </div>
+
+<style>
+    .flex {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5em;
+    }
+</style>
