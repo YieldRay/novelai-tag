@@ -14,9 +14,7 @@
 <div class="box">
     {#if typeof $tagsStore[currentCatName] === "object"}
         <!-- 渲染选中分类的tags -->
-        {#each Object.entries($tagsStore[currentCatName]) as [tag, tagInfo] (tag)}
-            {@const { cn } = tagInfo}
-            {@const count = tagInfo[prop]}
+        {#each Object.entries($tagsStore[currentCatName]) as [tag] (tag)}
             <Tag cat={currentCatName} {tag} {tagsStore} {prop} />
         {/each}
     {/if}

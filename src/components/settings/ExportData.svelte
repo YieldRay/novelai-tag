@@ -3,7 +3,7 @@
 
     import type { CatTags } from "../../lib/stores";
     import { exportData } from "../../lib/db";
-    import { Button, TextField, Divider } from "attractions";
+    import { Button, TextField, Switch } from "attractions";
     // @ts-ignore
     import structuredClone from "@ungap/structured-clone";
     import CheckboxGroup from "../CheckBoxGroup.svelte";
@@ -16,25 +16,28 @@
     let cats = Object.keys(tags);
     let selectCats = cats.map((value) => ({ value, selected: true }));
     let exportedData: string;
+    let isFormat = false;
     $: {
         const exportedTags = exportData(
             tags,
             selectCats.filter(({ selected }) => selected).map(({ value }) => value)
         );
-        exportedData = JSON.stringify(exportedTags);
+        exportedData = JSON.stringify(exportedTags, null, isFormat ? 4 : 0);
     }
 </script>
 
 <ModalButton title="导出数据">
+    若修改过数据，则先刷新再导入！
     <div style:min-width="80vw">
         <CheckboxGroup bind:items={selectCats} />
         <div style="display:flex;justify-content:flex-end">
-            <Button on:click={() => (selectCats = selectCats.map(({ value }) => ({ value, selected: true })))}
-                >全选</Button
-            >
-            <Button on:click={() => (selectCats = selectCats.map(({ value }) => ({ value, selected: false })))}
-                >反选</Button
-            >
+            <Switch bind:value={isFormat}>格式化</Switch>
+            <Button on:click={() => (selectCats = selectCats.map(({ value }) => ({ value, selected: true })))}>
+                全选
+            </Button>
+            <Button on:click={() => (selectCats = selectCats.map(({ value }) => ({ value, selected: false })))}>
+                反选
+            </Button>
         </div>
 
         <TextField style="min-height:50vh" value={exportedData} multiline />

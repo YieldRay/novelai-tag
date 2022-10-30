@@ -36,15 +36,19 @@ function mergeTags(dist: CatTags, source: CatTags, overwrite?: boolean, overwrit
     return dist;
 }
 
-export function exportData(catTags: CatTags, selectedCats?: Array<string>): CatTags {
-    const data: CatTags = {};
+interface ExportCatTags {
+    [catName: string]: {
+        [tagName: string]: string;
+    };
+}
+
+export function exportData(catTags: CatTags, selectedCats?: Array<string>): ExportCatTags {
+    const data: ExportCatTags = {};
     for (const [catName, tagsObj] of Object.entries(catTags)) {
         if (Array.isArray(selectedCats) && !selectedCats.includes(catName)) continue;
-        data[catName] = tagsObj;
+        data[catName] = {};
         for (const [tagName, tagInfo] of Object.entries(tagsObj)) {
-            data[catName][tagName] = { ...tagInfo };
-            delete data[catName][tagName].prompt;
-            delete data[catName][tagName].negative;
+            data[catName][tagName] = tagInfo.cn || tagName;
         }
     }
     return data;

@@ -28,13 +28,13 @@
     };
     async function addOneTag() {
         if (!(addTagInfo.cat && addTagInfo.tag)) {
-            toast("必须同时输入分类名和tag");
+            toast("必须同时输入分类名和TAG");
             return;
         }
         const impData = {
-            [addTagInfo.cat]: {
-                [addTagInfo.tag]: {
-                    cn: addTagInfo.cn,
+            [addTagInfo.cat.trim()]: {
+                [addTagInfo.tag.trim()]: {
+                    cn: addTagInfo.cn.trim(),
                 },
             },
         };
@@ -60,17 +60,18 @@
         bind:value={overwrite}
         on:change={() => {
             if (!overwrite) overwritePreset = false;
-        }}>&nbsp;覆盖之前的数据</Switch
-    >
+        }}
+        >&nbsp;覆盖之前的数据
+    </Switch>
     <Switch bind:value={overwritePreset} disabled={!overwrite}>&nbsp;覆盖预设的数据</Switch>
     <!-- Buttons -->
     <Divider />
 
-    <ModalButton title="通过输入tag信息导入">
+    <ModalButton title="通过输入TAG信息导入">
         <FormField name="分类名" help="输入分类名" required>
             <TextField bind:value={addTagInfo.cat} />
         </FormField>
-        <FormField name="tag" help="输入tag" required>
+        <FormField name="TAG" help="输入TAG，同一个分类不允许重复的TAG" required>
             <TextField bind:value={addTagInfo.tag} />
         </FormField>
         <FormField name="tag翻译" help="输入翻译 (可选)">
@@ -80,17 +81,12 @@
             <Button on:click={addOneTag}>添加</Button>
         </div>
     </ModalButton>
-    <ModalButton title="直接输入数据导入">
+    <ModalButton title="直接输入JSON数据导入">
         本应用数据通过JSON进行交换，可以直接在此输入导出的数据
         <br />
         格式为
         <code>
             {JSON.stringify({ 分类名: { tag名: "中文翻译" } })}
-        </code>
-        <br />
-        或者
-        <code>
-            {JSON.stringify({ 分类名: { tag名: { cn: "中文翻译" } } })}
         </code>
         <TextField multiline bind:value={json} />
         <div style="display:flex; justify-content:flex-end">
