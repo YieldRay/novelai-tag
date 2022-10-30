@@ -1,23 +1,61 @@
 <script type="ts">
-    export let count: number;
+    export let cat: string;
     export let tag: string;
-    
-    import { createEventDispatcher } from "svelte";
-    const dispatch = createEventDispatcher();
-    export const clickTag = () => dispatch("clickTag");
-    export const clickCount = () => dispatch("clickCount");
-    export const plus = () => dispatch("plus");
-    export const minus = () => dispatch("minus");
+    export let tagsStore: TagsStore;
+    export let prop: TagType;
+
+    import TagInfo from "./TagInfo.svelte";
+    import Alert from "./Alert.svelte";
+    import type { TagsStore, TagType } from "../lib/stores";
+
+    let count = $tagsStore[cat][tag][prop];
+    $: count = $tagsStore[cat][tag][prop];
+    let cn = $tagsStore[cat][tag].cn || tag;
+    $: cn = $tagsStore[cat][tag].cn || tag;
+
+    let isResetTagAlertOpen = false;
+    let isTagAlertOpen = false;
+
+    function clickTag() {
+        isTagAlertOpen = true;
+    }
+    function clickCount() {
+        if (count > 0) isResetTagAlertOpen = true;
+    }
+    function plus() {
+        tagsStore.plus(prop, cat, tag);
+    }
+    function minus() {
+        tagsStore.minus(prop, cat, tag);
+    }
+    function reset() {
+        tagsStore.reset(prop, cat, tag);
+    }
 </script>
 
 <div class="box" style:background={count ? "#f4e9ff" : "rgba(0,0,0,0.02)"}>
     <button class="btn" on:click={minus}>-</button>
     <div class="up-down">
-        <button class="tag" on:click={clickTag}>{tag}</button>
-        <button class="count" on:click={clickCount}>{count}</button>
+        <button class="tag" on:click={clickTag}>{cn}</button>
+        <button class="count" on:click={clickCount}>{count || 0}</button>
     </div>
     <button class="btn" on:click={plus}>+</button>
 </div>
+
+<Alert bind:open={isResetTagAlertOpen} on:confirm={reset} on:cancel={() => {}}>是否取消选中该 TAG ？</Alert>
+
+<Alert noButton bind:open={isTagAlertOpen}>
+    <div style:min-width="50vw">
+        <TagInfo
+            {prop}
+            {tag}
+            {cat}
+            {tagsStore}
+            on:update={() => (isTagAlertOpen = false)}
+            on:remove={() => (isTagAlertOpen = false)}
+        />
+    </div>
+</Alert>
 
 <style>
     .box {

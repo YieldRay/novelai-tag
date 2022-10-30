@@ -26,12 +26,17 @@
 </script>
 
 <ModalButton title="导出数据">
-    <CheckboxGroup bind:items={selectCats} />
-    <div style="display:flex;justify-content:flex-end">
-        <Button on:click={() => (selectCats = selectCats.map(({ value }) => ({ value, selected: true })))}>全选</Button>
-        <Button on:click={() => (selectCats = selectCats.map(({ value }) => ({ value, selected: false })))}>反选</Button
-        >
-    </div>
+    <div style:min-width="80vw">
+        <CheckboxGroup bind:items={selectCats} />
+        <div style="display:flex;justify-content:flex-end">
+            <Button on:click={() => (selectCats = selectCats.map(({ value }) => ({ value, selected: true })))}
+                >全选</Button
+            >
+            <Button on:click={() => (selectCats = selectCats.map(({ value }) => ({ value, selected: false })))}
+                >反选</Button
+            >
+        </div>
 
-    <TextField style="min-width:50vw;min-height:50vh" value={exportedData} multiline />
+        <TextField style="min-height:50vh" value={exportedData} multiline />
+    </div>
 </ModalButton>

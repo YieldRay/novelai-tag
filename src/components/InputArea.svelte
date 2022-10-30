@@ -10,33 +10,30 @@
 
     import getToast from "../lib/toast";
     const toast = getToast();
+    import copy from "../lib/copy";
 
     import { createTagsString } from "../lib/stores";
     let tagsString = createTagsString(prop, tagsStore);
+
+    function copyOutput() {
+        copy($tagsString).then(() => toast("已复制"));
+    }
+
+    function clearOutput() {
+        tagsStore.reset(prop);
+        toast("已清空");
+    }
 </script>
 
 <div class="flex">
     <div>
-        <Button
-            on:click={async () => {
-                if (!("clipboard" in navigator)) {
-                    toast("浏览器不支持 Clipboard API");
-                    return;
-                }
-                try {
-                    await navigator.clipboard.writeText($tagsString);
-                    toast("复制成功");
-                } catch {
-                    toast("请授予剪切板权限");
-                }
-            }}
-        >
+        <Button on:click={copyOutput}>
             <Dot {info} {attention} class="ml" />&nbsp;
             {label.toUpperCase()}
         </Button>
     </div>
     <div>
-        <Button on:click={() => tagsStore.reset(prop)}>清空</Button>
+        <Button on:click={clearOutput}>清空</Button>
     </div>
 </div>
 <TextField value={$tagsString} multiline />

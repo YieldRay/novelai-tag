@@ -5,15 +5,16 @@
     import { clearAll } from "../../lib/db";
 
     let isClearAlertOpen = false;
-</script>
+    let isConfirmAlertOpen = false;
 
-<Alert bind:open={isClearAlertOpen} on:confirm={() => location.reload()}>清除完成，刷新以重载默认数据</Alert>
-<Button
-    on:click={async () => {
-        (await tagsStorePromise).clear();
+    async function clearData() {
+        const ts = await tagsStorePromise;
+        ts.clear();
         await clearAll();
         isClearAlertOpen = true;
-    }}
->
-    清除数据
-</Button>
+    }
+</script>
+
+<Button on:click={() => (isConfirmAlertOpen = true)}>清除数据</Button>
+<Alert bind:open={isConfirmAlertOpen} on:confirm={clearData}>确认清除？</Alert>
+<Alert bind:open={isClearAlertOpen} on:confirm={() => location.reload()}>清除完成，刷新以重载默认数据</Alert>

@@ -22,6 +22,8 @@ export type TagType = "prompt" | "negative";
 
 async function createTagsStore(tagsSource: CatTags) {
     const { subscribe, set, update } = writable<CatTags>(tagsSource);
+
+    // for lazy save
     let actionCount = 0;
     const saveCount = 5;
     const save = (obj: CatTags) => {
@@ -57,6 +59,7 @@ async function createTagsStore(tagsSource: CatTags) {
             if (cat && tag)
                 update((tags) => {
                     tags[cat][tag][PROP] = 0;
+                    save(tags);
                     return tags;
                 });
             // reset all tags
@@ -76,16 +79,41 @@ async function createTagsStore(tagsSource: CatTags) {
                 if (tags?.[cat]?.[tag]) return tags;
                 if (!tags[cat]) tags[cat] = {};
                 tags[cat][tag] = { ...info, nonpreset: true };
-                console.log(tags[cat][tag]);
                 //! This func is only for use add !
+                save(tags);
                 return tags;
             });
         },
         remove(cat: string, tag?: string) {
             update((tags) => {
                 if (!tag) delete tags[cat];
-                if (tags[cat][tag].nonpreset) delete tags[cat][tag];
+                // if (tags[cat][tag].nonpreset)
+                delete tags[cat][tag];
                 //! same as above !
+                save(tags);
+                return tags;
+            });
+        },
+        modify(oldTag: [string, string], newTag: [string, string, TagInfo]) {
+            update((tags) => {
+                this.remove(...oldTag);
+                this.add(...newTag);
+                save(tags);
+                return tags;
+            });
+        },
+        removeUnusedCat() {
+            update((tags) => {
+                for (const cat in tags) {
+                    if (Object.values(tags[cat]).length === 0) delete tags[cat];
+                }
+                save(tags);
+                return tags;
+            });
+        },
+        forceSave() {
+            update((tags) => {
+                saveTags(tags);
                 return tags;
             });
         },
