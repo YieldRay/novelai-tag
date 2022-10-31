@@ -8,6 +8,7 @@
     import ManageData from "./settings/ManageData.svelte";
     import ImportData from "./settings/ImportData.svelte";
     import ExportData from "./settings/ExportData.svelte";
+    import About from "./settings/About.svelte";
 </script>
 
 <ModalButton title="设置">
@@ -15,4 +16,5 @@
     <ManageData />
     <ImportData />
     <ExportData {catTags} />
+    <About />
 </ModalButton>

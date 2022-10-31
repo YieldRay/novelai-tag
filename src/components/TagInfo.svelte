@@ -52,10 +52,10 @@
     }
 </script>
 
-<FormField name="分类名" help="修改分类名" required>
+<FormField name="分类名" required>
     <TextField bind:value={newCat} />
 </FormField>
-<FormField name="TAG" help="修改TAG" required>
+<FormField name="TAG" required>
     <TextField bind:value={newTag} />
 </FormField>
 <FormField name="中文翻译" optional>

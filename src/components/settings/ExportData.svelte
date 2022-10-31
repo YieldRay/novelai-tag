@@ -4,15 +4,10 @@
     import type { CatTags } from "../../lib/stores";
     import { exportData } from "../../lib/db";
     import { Button, TextField, Switch } from "attractions";
-    // @ts-ignore
-    import structuredClone from "@ungap/structured-clone";
     import CheckboxGroup from "../CheckBoxGroup.svelte";
     import ModalButton from "../ModalButton.svelte";
 
-    ///// IMPORTANT /////
-    let tags = structuredClone(catTags); //! This fix the bug
-    ///// IMPORTANT /////
-
+    let tags: CatTags = catTags;
     let cats = Object.keys(tags);
     let selectCats = cats.map((value) => ({ value, selected: true }));
     let exportedData: string;
@@ -27,11 +22,10 @@
 </script>
 
 <ModalButton title="导出数据">
-    若修改过数据，则先刷新再导入！
     <div style:min-width="80vw">
         <CheckboxGroup bind:items={selectCats} />
         <div style="display:flex;justify-content:flex-end">
-            <Switch bind:value={isFormat}>格式化</Switch>
+            <Switch bind:value={isFormat}>&nbsp;格式化</Switch>
             <Button on:click={() => (selectCats = selectCats.map(({ value }) => ({ value, selected: true })))}>
                 全选
             </Button>

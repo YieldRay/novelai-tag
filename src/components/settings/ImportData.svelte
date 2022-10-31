@@ -71,10 +71,10 @@
         <FormField name="分类名" help="输入分类名" required>
             <TextField bind:value={addTagInfo.cat} />
         </FormField>
-        <FormField name="TAG" help="输入TAG，同一个分类不允许重复的TAG" required>
+        <FormField name="TAG" help="同一个分类不允许重复的TAG" required>
             <TextField bind:value={addTagInfo.tag} />
         </FormField>
-        <FormField name="tag翻译" help="输入翻译 (可选)">
+        <FormField name="中文翻译" help="输入翻译 (可选)" optional>
             <TextField bind:value={addTagInfo.cn} />
         </FormField>
         <div style="display:flex; justify-content:flex-end">
